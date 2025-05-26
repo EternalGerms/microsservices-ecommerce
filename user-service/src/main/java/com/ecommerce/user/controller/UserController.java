@@ -7,6 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import javax.crypto.spec.SecretKeySpec;
+import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,13 +43,14 @@ public class UserController {
     }
 
     private String generateToken(User user) {
+        Key key = new SecretKeySpec(jwtSecret.getBytes(), SignatureAlgorithm.HS256.getJcaName());
         return Jwts.builder()
                 .setSubject(user.getEmail())
                 .claim("id", user.getId())
                 .claim("name", user.getName())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
-                .signWith(SignatureAlgorithm.HS256, jwtSecret.getBytes())
+                .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
 } 
