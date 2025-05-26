@@ -17,7 +17,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    private final String jwtSecret = "melancia1997";
+    private final String jwtSecret = "melancia1997melancia1997melancia1997!!";
     private final long jwtExpirationMs = 86400000; // 1 dia
 
     @PostMapping("/register")
