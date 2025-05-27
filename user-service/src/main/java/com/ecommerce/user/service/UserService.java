@@ -4,6 +4,8 @@ import com.ecommerce.user.model.User;
 import com.ecommerce.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.dao.DataIntegrityViolationException;
+import com.ecommerce.user.exception.EmailAlreadyExistsException;
 
 @Service
 public class UserService {
@@ -11,8 +13,11 @@ public class UserService {
     private UserRepository userRepository;
 
     public User registerUser(User user) {
-        // Aqui pode-se adicionar validações, criptografia de senha, etc.
-        return userRepository.save(user);
+        try {
+            return userRepository.save(user);
+        } catch (DataIntegrityViolationException e) {
+            throw new EmailAlreadyExistsException();
+        }
     }
 
     public User authenticate(String email, String password) {

@@ -1,6 +1,7 @@
 com\ecommerce\user\repository\UserRepository.class
 com\ecommerce\user\App.class
 com\ecommerce\user\config\jwt\JwtAuthenticationFilter.class
+com\ecommerce\user\exception\EmailAlreadyExistsException.class
 com\ecommerce\user\config\SecurityConfig.class
 com\ecommerce\user\model\User.class
 com\ecommerce\user\service\UserService.class

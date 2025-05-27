@@ -12,6 +12,8 @@ import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import com.ecommerce.user.exception.EmailAlreadyExistsException;
+import org.springframework.http.HttpStatus;
 
 @RestController
 @RequestMapping("/users")
@@ -52,5 +54,13 @@ public class UserController {
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    @ExceptionHandler(EmailAlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Map<String, String> handleEmailAlreadyExistsException(EmailAlreadyExistsException ex) {
+        Map<String, String> erro = new HashMap<>();
+        erro.put("erro", ex.getMessage());
+        return erro;
     }
 } 
