@@ -13,6 +13,9 @@ public class UserService {
     private UserRepository userRepository;
 
     public User registerUser(User user) {
+        if (userRepository.existsByEmail(user.getEmail())) {
+            throw new EmailAlreadyExistsException();
+        }
         try {
             return userRepository.save(user);
         } catch (DataIntegrityViolationException e) {
