@@ -1,0 +1,122 @@
+{
+  "info": {
+    "name": "User Service",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_id": "ecommerce-user-service"
+  },
+  "item": [
+    {
+      "name": "Registrar Usuário",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"João Silva\",\n  \"email\": \"joao@email.com\",\n  \"password\": \"senha123\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8086/users/register",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8086",
+          "path": ["users", "register"]
+        }
+      }
+    },
+    {
+      "name": "Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"joao@email.com\",\n  \"password\": \"senha123\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8086/users/login",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8086",
+          "path": ["users", "login"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "let jsonData = pm.response.json();",
+              "if (jsonData.token) {",
+              "    pm.collectionVariables.set(\"token\", jsonData.token);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Consultar Perfil",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": {
+          "raw": "http://localhost:8086/users/me",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8086",
+          "path": ["users", "me"]
+        }
+      }
+    },
+    {
+      "name": "Atualizar Perfil",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"João Atualizado\",\n  \"password\": \"novaSenha123\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8086/users/me",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8086",
+          "path": ["users", "me"]
+        }
+      }
+    },
+    {
+      "name": "Deletar Perfil",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": {
+          "raw": "http://localhost:8086/users/me",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8086",
+          "path": ["users", "me"]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "token",
+      "value": ""
+    }
+  ]
+} 

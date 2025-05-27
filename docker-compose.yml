@@ -24,8 +24,21 @@ services:
     ports:
       - "8085:8080"
     container_name: shopping-cart-service
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: mydb
   user-service:
     build: ./user-service
     ports:
       - "8086:8080"
-    container_name: user-service 
+    container_name: user-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/mydb
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: pass
+    depends_on:
+      - postgres 

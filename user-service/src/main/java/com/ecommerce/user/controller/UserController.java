@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.Map;
 import com.ecommerce.user.exception.EmailAlreadyExistsException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @RestController
 @RequestMapping("/users")
@@ -62,5 +64,34 @@ public class UserController {
         Map<String, String> erro = new HashMap<>();
         erro.put("erro", ex.getMessage());
         return erro;
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> getProfile() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = (String) auth.getPrincipal();
+        User user = userService.findByEmail(email);
+        if (user == null) return ResponseEntity.notFound().build();
+        user.setPassword(null); // Não retornar senha
+        return ResponseEntity.ok(user);
+    }
+
+    @PutMapping("/me")
+    public ResponseEntity<?> updateProfile(@RequestBody User updatedUser) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = (String) auth.getPrincipal();
+        User user = userService.updateUser(email, updatedUser);
+        if (user == null) return ResponseEntity.notFound().build();
+        user.setPassword(null);
+        return ResponseEntity.ok(user);
+    }
+
+    @DeleteMapping("/me")
+    public ResponseEntity<?> deleteProfile() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = (String) auth.getPrincipal();
+        boolean deleted = userService.deleteByEmail(email);
+        if (!deleted) return ResponseEntity.notFound().build();
+        return ResponseEntity.noContent().build();
     }
 } 
