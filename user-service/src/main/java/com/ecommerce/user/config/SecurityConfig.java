@@ -18,7 +18,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/users/login", "/users/register", "/h2-console/**").permitAll()
+                .requestMatchers("/auth/login", "/auth/register", "/h2-console/**").permitAll()
                 .anyRequest().authenticated()
             );
         http.headers(headers -> headers.frameOptions(frame -> frame.disable())); // H2 console

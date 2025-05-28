@@ -1,9 +1,12 @@
 com\ecommerce\user\exception\UserAlreadyExistsException.class
-com\ecommerce\user\repository\UserRepository.class
+com\ecommerce\user\config\jwt\JwtAuthenticationFilter.class
+com\ecommerce\user\exception\EmailAlreadyExistsException.class
 com\ecommerce\user\config\SecurityConfig.class
 com\ecommerce\user\model\dto\RegistrationRequest.class
-com\ecommerce\user\model\dto\UserResponse.class
-com\ecommerce\user\model\User.class
 com\ecommerce\user\config\PasswordConfig.class
 com\ecommerce\user\service\UserService.class
 com\ecommerce\user\controller\UserController.class
+com\ecommerce\user\repository\UserRepository.class
+com\ecommerce\user\App.class
+com\ecommerce\user\model\dto\UserResponse.class
+com\ecommerce\user\model\User.class

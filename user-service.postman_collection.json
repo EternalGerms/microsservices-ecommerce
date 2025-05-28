@@ -17,11 +17,11 @@
           "raw": "{\n  \"name\": \"João Silva\",\n  \"email\": \"joao@email.com\",\n  \"password\": \"senha123\"\n}"
         },
         "url": {
-          "raw": "http://localhost:8086/users/register",
+          "raw": "http://localhost:8086/auth/register",
           "protocol": "http",
           "host": ["localhost"],
           "port": "8086",
-          "path": ["users", "register"]
+          "path": ["auth", "register"]
         }
       }
     },
@@ -37,11 +37,11 @@
           "raw": "{\n  \"email\": \"joao@email.com\",\n  \"password\": \"senha123\"\n}"
         },
         "url": {
-          "raw": "http://localhost:8086/users/login",
+          "raw": "http://localhost:8086/auth/login",
           "protocol": "http",
           "host": ["localhost"],
           "port": "8086",
-          "path": ["users", "login"]
+          "path": ["auth", "login"]
         }
       },
       "event": [
@@ -67,11 +67,11 @@
           { "key": "Authorization", "value": "Bearer {{token}}" }
         ],
         "url": {
-          "raw": "http://localhost:8086/users/me",
+          "raw": "http://localhost:8086/auth/me",
           "protocol": "http",
           "host": ["localhost"],
           "port": "8086",
-          "path": ["users", "me"]
+          "path": ["auth", "me"]
         }
       }
     },
@@ -88,11 +88,11 @@
           "raw": "{\n  \"name\": \"João Atualizado\",\n  \"password\": \"novaSenha123\"\n}"
         },
         "url": {
-          "raw": "http://localhost:8086/users/me",
+          "raw": "http://localhost:8086/auth/me",
           "protocol": "http",
           "host": ["localhost"],
           "port": "8086",
-          "path": ["users", "me"]
+          "path": ["auth", "me"]
         }
       }
     },
@@ -104,11 +104,11 @@
           { "key": "Authorization", "value": "Bearer {{token}}" }
         ],
         "url": {
-          "raw": "http://localhost:8086/users/me",
+          "raw": "http://localhost:8086/auth/me",
           "protocol": "http",
           "host": ["localhost"],
           "port": "8086",
-          "path": ["users", "me"]
+          "path": ["auth", "me"]
         }
       }
     }
