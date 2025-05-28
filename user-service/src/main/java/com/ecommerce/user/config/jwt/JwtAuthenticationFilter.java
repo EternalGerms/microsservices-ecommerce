@@ -1,7 +1,6 @@
 package com.ecommerce.user.config.jwt;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,11 +22,12 @@ import java.util.stream.Collectors;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-    private final String jwtSecret = "melancia1997melancia1997melancia1997!!";
+    private final JwtUtil jwtUtil;
     private final UserService userService;
 
-    public JwtAuthenticationFilter(UserService userService) {
+    public JwtAuthenticationFilter(UserService userService, JwtUtil jwtUtil) {
         this.userService = userService;
+        this.jwtUtil = jwtUtil;
     }
 
     @Override
@@ -36,12 +36,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String authHeader = request.getHeader("Authorization");
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
-            try {
-                Claims claims = Jwts.parser()
-                        .setSigningKey(jwtSecret.getBytes())
-                        .build()
-                        .parseClaimsJws(token)
-                        .getBody();
+            Claims claims = jwtUtil.validateTokenAndGetClaims(token);
+            
+            if (claims != null) {
                 String email = claims.getSubject();
                 
                 if (email != null) {
@@ -68,7 +65,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         SecurityContextHolder.getContext().setAuthentication(authentication);
                     }
                 }
-            } catch (Exception e) {
+            } else {
                 // Token inválido ou expirado
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 return;

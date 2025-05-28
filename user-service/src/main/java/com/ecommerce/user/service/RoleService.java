@@ -51,7 +51,8 @@ public class RoleService {
         if (userRole != null) {
             Set<Permission> userPermissions = new HashSet<>(Arrays.asList(
                 getPermissionByName(PERM_READ_USER),
-                getPermissionByName(PERM_WRITE_USER)
+                getPermissionByName(PERM_WRITE_USER),
+                getPermissionByName(PERM_DELETE_USER)
             ));
             userRole.setPermissions(userPermissions);
             roleRepository.save(userRole);

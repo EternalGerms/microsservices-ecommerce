@@ -5,33 +5,29 @@ import com.ecommerce.user.model.dto.RegistrationRequest;
 import com.ecommerce.user.model.dto.UserResponse;
 import com.ecommerce.user.service.UserService;
 import com.ecommerce.user.exception.UserAlreadyExistsException;
+import com.ecommerce.user.config.jwt.JwtUtil;
 import jakarta.validation.Valid;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
-import java.security.Key;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.access.prepost.PreAuthorize;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/auth")
 public class UserController {
     private final UserService userService;
-    private final String jwtSecret = "melancia1997melancia1997melancia1997!!";
-    private final long jwtExpirationMs = 86400000; // 1 dia
+    private final JwtUtil jwtUtil;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, JwtUtil jwtUtil) {
         this.userService = userService;
+        this.jwtUtil = jwtUtil;
     }
+    
     @PostMapping("/register")
     public ResponseEntity<UserResponse> registerUser(@Valid @RequestBody RegistrationRequest registrationRequest) {
         UserResponse createdUser = userService.registerUser(registrationRequest);
@@ -46,37 +42,10 @@ public class UserController {
         if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
         }
-        String token = generateToken(user);
+        String token = jwtUtil.generateToken(user);
         Map<String, String> response = new HashMap<>();
         response.put("token", token);
         return ResponseEntity.ok(response);
-    }
-
-    private String generateToken(User user) {
-        Key key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
-        
-        // Extrair nomes de todas as roles
-        List<String> roles = user.getRoles().stream()
-                .map(role -> role.getName())
-                .collect(Collectors.toList());
-        
-        // Extrair nomes de todas as permissões
-        List<String> permissions = user.getRoles().stream()
-                .flatMap(role -> role.getPermissions().stream())
-                .map(permission -> permission.getName())
-                .distinct()
-                .collect(Collectors.toList());
-        
-        return Jwts.builder()
-                .setSubject(user.getEmail())
-                .claim("id", user.getId())
-                .claim("name", user.getName())
-                .claim("roles", roles)
-                .claim("permissions", permissions)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
-                .signWith(key)
-                .compact();
     }
 
     @ExceptionHandler(UserAlreadyExistsException.class)
