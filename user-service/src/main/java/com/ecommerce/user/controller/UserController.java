@@ -6,13 +6,12 @@ import com.ecommerce.user.model.dto.UserResponse;
 import com.ecommerce.user.service.UserService;
 import com.ecommerce.user.exception.UserAlreadyExistsException;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import javax.crypto.spec.SecretKeySpec;
+import io.jsonwebtoken.security.Keys;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
@@ -27,11 +26,9 @@ public class UserController {
     private final String jwtSecret = "melancia1997melancia1997melancia1997!!";
     private final long jwtExpirationMs = 86400000; // 1 dia
 
-    @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
     }
-
     @PostMapping("/register")
     public ResponseEntity<UserResponse> registerUser(@Valid @RequestBody RegistrationRequest registrationRequest) {
         UserResponse createdUser = userService.registerUser(registrationRequest);
@@ -53,14 +50,14 @@ public class UserController {
     }
 
     private String generateToken(User user) {
-        Key key = new SecretKeySpec(jwtSecret.getBytes(), SignatureAlgorithm.HS256.getJcaName());
+        Key key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
         return Jwts.builder()
                 .setSubject(user.getEmail())
                 .claim("id", user.getId())
                 .claim("name", user.getName())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
-                .signWith(key, SignatureAlgorithm.HS256)
+                .signWith(key)
                 .compact();
     }
 
