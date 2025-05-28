@@ -4,6 +4,7 @@ import com.ecommerce.user.config.jwt.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
@@ -11,6 +12,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http, JwtAuthenticationFilter jwtFilter) throws Exception {
@@ -19,6 +21,7 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/auth/login", "/auth/register", "/h2-console/**").permitAll()
+                .requestMatchers("/admin/**").hasAuthority("ADMIN_ACCESS")
                 .anyRequest().authenticated()
             );
         http.headers(headers -> headers.frameOptions(frame -> frame.disable())); // H2 console

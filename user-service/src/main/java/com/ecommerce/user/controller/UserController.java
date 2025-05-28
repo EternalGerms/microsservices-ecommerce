@@ -18,6 +18,9 @@ import java.util.HashMap;
 import java.util.Map;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.access.prepost.PreAuthorize;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/auth")
@@ -51,10 +54,25 @@ public class UserController {
 
     private String generateToken(User user) {
         Key key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
+        
+        // Extrair nomes de todas as roles
+        List<String> roles = user.getRoles().stream()
+                .map(role -> role.getName())
+                .collect(Collectors.toList());
+        
+        // Extrair nomes de todas as permissões
+        List<String> permissions = user.getRoles().stream()
+                .flatMap(role -> role.getPermissions().stream())
+                .map(permission -> permission.getName())
+                .distinct()
+                .collect(Collectors.toList());
+        
         return Jwts.builder()
                 .setSubject(user.getEmail())
                 .claim("id", user.getId())
                 .claim("name", user.getName())
+                .claim("roles", roles)
+                .claim("permissions", permissions)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
                 .signWith(key)
@@ -71,26 +89,29 @@ public class UserController {
     }
 
     @GetMapping("/me")
+    @PreAuthorize("hasAuthority('READ_USER')")
     public ResponseEntity<?> getProfile() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = (String) auth.getPrincipal();
         User user = userService.findByEmail(email);
         if (user == null) return ResponseEntity.notFound().build();
-        UserResponse userResponse = new UserResponse(user.getId(), user.getName(), user.getEmail());
+        UserResponse userResponse = new UserResponse(user);
         return ResponseEntity.ok(userResponse);
     }
 
     @PutMapping("/me")
+    @PreAuthorize("hasAuthority('WRITE_USER')")
     public ResponseEntity<?> updateProfile(@RequestBody User updatedUser) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = (String) auth.getPrincipal();
         User user = userService.updateUser(email, updatedUser);
         if (user == null) return ResponseEntity.notFound().build();
-        UserResponse userResponse = new UserResponse(user.getId(), user.getName(), user.getEmail());
+        UserResponse userResponse = new UserResponse(user);
         return ResponseEntity.ok(userResponse);
     }
 
     @DeleteMapping("/me")
+    @PreAuthorize("hasAuthority('DELETE_USER')")
     public ResponseEntity<?> deleteProfile() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = (String) auth.getPrincipal();
