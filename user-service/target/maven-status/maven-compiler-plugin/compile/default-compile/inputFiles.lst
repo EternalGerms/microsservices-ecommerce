@@ -1,0 +1,12 @@
+C:\Users\epoto\Desktop\trabajo\testes nucleares\microsservices-ecommerce\user-service\src\main\java\com\ecommerce\user\controller\UserController.java
+C:\Users\epoto\Desktop\trabajo\testes nucleares\microsservices-ecommerce\user-service\src\main\java\com\ecommerce\user\exception\UserAlreadyExistsException.java
+C:\Users\epoto\Desktop\trabajo\testes nucleares\microsservices-ecommerce\user-service\src\main\java\com\ecommerce\user\model\dto\UserResponse.java
+C:\Users\epoto\Desktop\trabajo\testes nucleares\microsservices-ecommerce\user-service\src\main\java\com\ecommerce\user\config\jwt\JwtAuthenticationFilter.java
+C:\Users\epoto\Desktop\trabajo\testes nucleares\microsservices-ecommerce\user-service\src\main\java\com\ecommerce\user\model\dto\RegistrationRequest.java
+C:\Users\epoto\Desktop\trabajo\testes nucleares\microsservices-ecommerce\user-service\src\main\java\com\ecommerce\user\service\UserService.java
+C:\Users\epoto\Desktop\trabajo\testes nucleares\microsservices-ecommerce\user-service\src\main\java\com\ecommerce\user\App.java
+C:\Users\epoto\Desktop\trabajo\testes nucleares\microsservices-ecommerce\user-service\src\main\java\com\ecommerce\user\exception\EmailAlreadyExistsException.java
+C:\Users\epoto\Desktop\trabajo\testes nucleares\microsservices-ecommerce\user-service\src\main\java\com\ecommerce\user\repository\UserRepository.java
+C:\Users\epoto\Desktop\trabajo\testes nucleares\microsservices-ecommerce\user-service\src\main\java\com\ecommerce\user\config\PasswordConfig.java
+C:\Users\epoto\Desktop\trabajo\testes nucleares\microsservices-ecommerce\user-service\src\main\java\com\ecommerce\user\config\SecurityConfig.java
+C:\Users\epoto\Desktop\trabajo\testes nucleares\microsservices-ecommerce\user-service\src\main\java\com\ecommerce\user\model\User.java

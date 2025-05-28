@@ -1,37 +1,45 @@
 package com.ecommerce.user.service;
 
 import com.ecommerce.user.model.User;
+import com.ecommerce.user.model.dto.RegistrationRequest;
+import com.ecommerce.user.model.dto.UserResponse;
 import com.ecommerce.user.repository.UserRepository;
+import com.ecommerce.user.exception.UserAlreadyExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.dao.DataIntegrityViolationException;
-import com.ecommerce.user.exception.EmailAlreadyExistsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Service
 public class UserService {
-    @Autowired
-    private UserRepository userRepository;
 
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
-    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    public User registerUser(User user) {
-        if (userRepository.existsByEmail(user.getEmail())) {
-            logger.warn("Tentativa de registro com e-mail já existente: {}", user.getEmail());
-            throw new EmailAlreadyExistsException();
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    @Autowired
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    public UserResponse registerUser(RegistrationRequest registrationRequest) {
+        if (userRepository.existsByEmail(registrationRequest.getEmail())) {
+            logger.warn("Attempt to register with already existing email: {}", registrationRequest.getEmail());
+            throw new UserAlreadyExistsException("User with email " + registrationRequest.getEmail() + " already exists.");
         }
-        try {
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-            User saved = userRepository.save(user);
-            logger.info("Usuário registrado: {}", saved.getEmail());
-            return saved;
-        } catch (DataIntegrityViolationException e) {
-            logger.error("Erro de integridade ao registrar usuário: {}", user.getEmail());
-            throw new EmailAlreadyExistsException();
-        }
+
+        User newUser = new User();
+        newUser.setName(registrationRequest.getName());
+        newUser.setEmail(registrationRequest.getEmail());
+        newUser.setPassword(passwordEncoder.encode(registrationRequest.getPassword()));
+
+        User savedUser = userRepository.save(newUser);
+        logger.info("User registered successfully: {}", savedUser.getEmail());
+
+        return new UserResponse(savedUser.getId(), savedUser.getName(), savedUser.getEmail());
     }
 
     public User authenticate(String email, String password) {
