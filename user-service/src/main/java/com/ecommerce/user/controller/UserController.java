@@ -16,6 +16,8 @@ import java.util.Map;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.GrantedAuthority;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/auth")
@@ -58,7 +60,7 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    @PreAuthorize("hasAuthority('READ_USER')")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('MANAGER')")
     public ResponseEntity<?> getProfile() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = (String) auth.getPrincipal();
@@ -69,7 +71,7 @@ public class UserController {
     }
 
     @PutMapping("/me")
-    @PreAuthorize("hasAuthority('WRITE_USER')")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('MANAGER')")
     public ResponseEntity<?> updateProfile(@RequestBody User updatedUser) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = (String) auth.getPrincipal();
@@ -80,12 +82,30 @@ public class UserController {
     }
 
     @DeleteMapping("/me")
-    @PreAuthorize("hasAuthority('DELETE_USER')")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('MANAGER')")
     public ResponseEntity<?> deleteProfile() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = (String) auth.getPrincipal();
         boolean deleted = userService.deleteByEmail(email);
         if (!deleted) return ResponseEntity.notFound().build();
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/debug/token")
+    public ResponseEntity<?> debugToken() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Map<String, Object> response = new HashMap<>();
+        
+        if (auth != null) {
+            response.put("principal", auth.getPrincipal().toString());
+            response.put("authenticated", auth.isAuthenticated());
+            response.put("authorities", auth.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .collect(Collectors.toList()));
+        } else {
+            response.put("error", "No authentication found");
+        }
+        
+        return ResponseEntity.ok(response);
     }
 } 

@@ -105,23 +105,35 @@ public class UserService {
     
     @Transactional
     public UserResponse updateUserRoles(Long userId, Set<String> roleNames) {
+        logger.info("Updating roles for user ID {}: {}", userId, roleNames);
+        
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
         
         Set<Role> roles = roleService.getRolesByNames(roleNames);
+        logger.info("Found {} roles in the database", roles.size());
+        
         user.setRoles(roles);
         
         User savedUser = userRepository.save(user);
+        logger.info("User roles updated successfully for user ID {}", userId);
+        
         return new UserResponse(savedUser);
     }
     
     @Transactional
     public UserResponse toggleUserActive(Long userId) {
+        logger.info("Toggling active status for user ID {}", userId);
+        
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
         
-        user.setActive(!user.isActive());
+        boolean newStatus = !user.isActive();
+        user.setActive(newStatus);
+        
         User savedUser = userRepository.save(user);
+        logger.info("User active status toggled to {} for user ID {}", newStatus, userId);
+        
         return new UserResponse(savedUser);
     }
 } 
